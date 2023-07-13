@@ -94,13 +94,13 @@ console.log(user_over_30.length);
 //리팩터링의 핵심은 중복을 제거하고 의도를 드러내는 것
 //MAP
 
-function map(list, iteratee) {
-  var new_list = [];
-  for (var i = 0, len = list.length; i < len; i++) {
-    new_list.push(iteratee(list[i]));
-  }
-  return new_list;
-}
+// function map(list, iteratee) {
+//   var new_list = [];
+//   for (var i = 0, len = list.length; i < len; i++) {
+//     new_list.push(iteratee(list[i]));
+//   }
+//   return new_list;
+// }
 
 var ages_m = map(users_under_30, function (user) {
   return user.age;
@@ -214,3 +214,60 @@ function findById(list, id) {
     if (list[i].id == id) return list[i];
   }
 }
+
+function findByName(list, name) {
+  for (var i = 0, len = list.length; i < len; i++) {
+    if (list[i].name == name) return list[i];
+  }
+}
+
+function findByAge(list, age) {
+  for (var i = 0, len = list.length; i < len; i++) {
+    if (list[i].age == age) return list[i];
+  }
+}
+
+//위의 방식은 깔끔해졌지만 중복의 아쉬움이 있다.
+
+function findBy(key, list, val) {
+  for (var i = 0, len = list.length; i < len; i++) {
+    if (list[i][key] === val) return list[i];
+  }
+}
+
+//인자를 하나 추가함으로써 코드를 1/3으로 줄였다.
+
+//인자로 키와 값 대신 함수를 사용해 보자
+
+function find(list, predicate) {
+  for (var i = 0, len = list.length; i < len; i++) {
+    if (predicate(list[i])) return list[i];
+  }
+}
+
+// console.log(
+//   find(users, function (u) {
+//     return u.getAge() == 25;
+//   }).getName()
+// );
+//HA
+
+//다형성 고려
+console.log(
+  map(
+    filter(users, function (u) {
+      return u.age >= 30;
+    })
+  ),
+  function (u) {
+    return u.name;
+  }
+);
+
+function bmatch1(key, val) {
+  return function (obj) {
+    return obj[key] === val;
+  };
+}
+console.log(find(users, bmatch1("id", 1)));
+
